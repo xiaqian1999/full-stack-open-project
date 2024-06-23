@@ -1,22 +1,16 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-
-const Hello = (props) => {
-  console.log(props)
-  return (
-    <>
-      <p>Hello {props.name}, you are {props.age} years old</p>
-    </>
-  )
-}
 
 const App = () => {
-  const friends = [ 'Peter', 'Maya']
+  const [counter, setCounter] = useState(0)
+  
+  setTimeout(
+    () => setCounter(counter + 1),
+    1000
+  )
+
+  console.log('rendering... ', counter)
   return (
-    <>
-      <p>{friends}</p>
-    </>
+    <div>{counter}</div>
   )
 }
 export default App
