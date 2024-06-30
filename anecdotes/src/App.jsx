@@ -6,6 +6,12 @@ const Anecdote = ({text}) => (
   </div>
 )
 
+const Vote = ({vote}) => (
+  <div>
+    <p>has {vote} votes</p>
+  </div>
+)
+
 const Button = ({onClick, text}) => (
   <button onClick={onClick}>
     {text}
@@ -23,8 +29,9 @@ const App = () => {
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.',
     'The only way to go fast, is to go well.'
   ]
-   
+  
   const [selected, setSelected] = useState(0)
+  const [allVotes, setAllVotes] = useState(Array(anecdotes.length).fill(0))
 
   // Math.floor() is a Javascript method that returns the largest integer less than or equal to a given number
   const handleRandomClick = () => {
@@ -32,16 +39,20 @@ const App = () => {
     setSelected(randomIndex)
   }
 
+  const handleVoteClick = () => {
+    const newAllVotes = [...allVotes]
+    newAllVotes[selected] += 1
+    setAllVotes(newAllVotes)
+  }
+
   return (
     <div>
       <Anecdote text={anecdotes[selected]} />
+      <Vote vote={allVotes[selected]}/>
       <Button onClick={handleRandomClick} text="Next random anecdote" />
+      <Button onClick={handleVoteClick} text="vote" />
     </div>
   )
 }
 
 export default App
-
-// The overall logic is that 
-// 1. When user click the button once, it will randomly selected one string from the anecdotes array
-// 2. We can do so with javascript's generate random number, have each string as index number, when the index called, then return the corresponding array
