@@ -1,21 +1,50 @@
 import { useState } from 'react'
 
-const Anecdote = ({text}) => (
+
+const Header = ({text}) => (
+  <div>
+    <h1>{text}</h1>
+  </div>
+)
+
+const Anecdotes = ({text}) => (
   <div>
     <p>{text}</p>
   </div>
 )
 
-const Vote = ({vote}) => (
+const Votes = ({votes}) => (
   <div>
-    <p>has {vote} votes</p>
+    <p>has {votes} votes</p>
   </div>
 )
 
+const WithMostVotes = ({anecdotes, votesArray}) => {
+  const highestVoteCount = Math.max(...votesArray)
+  const winnerIndex = votesArray.indexOf(highestVoteCount)
+  const winnerQuote = anecdotes[winnerIndex]
+  if (highestVoteCount === 0) {
+    return (
+      <div>
+        No votes yet
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <p>{winnerQuote}</p>
+      <p>has {highestVoteCount} votes</p>
+    </div>
+  )
+}
+
 const Button = ({onClick, text}) => (
-  <button onClick={onClick}>
-    {text}
-  </button>
+  <div>
+    <button onClick={onClick}>
+      {text}
+    </button>
+  </div>
 )
 
 const App = () => {
@@ -29,28 +58,31 @@ const App = () => {
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.',
     'The only way to go fast, is to go well.'
   ]
-  
+   
   const [selected, setSelected] = useState(0)
-  const [allVotes, setAllVotes] = useState(Array(anecdotes.length).fill(0))
+  const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
 
-  // Math.floor() is a Javascript method that returns the largest integer less than or equal to a given number
-  const handleRandomClick = () => {
+  const randomAnecdotes = () => {
     const randomIndex = Math.floor(Math.random() * anecdotes.length)
     setSelected(randomIndex)
   }
 
-  const handleVoteClick = () => {
-    const newAllVotes = [...allVotes]
-    newAllVotes[selected] += 1
-    setAllVotes(newAllVotes)
+  const voteAnecdotes = () => {
+    const votesArray = [...votes]
+    votesArray[selected] += 1
+    setVotes(votesArray)
   }
 
   return (
     <div>
-      <Anecdote text={anecdotes[selected]} />
-      <Vote vote={allVotes[selected]}/>
-      <Button onClick={handleRandomClick} text="Next random anecdote" />
-      <Button onClick={handleVoteClick} text="vote" />
+      <Header text="Anecdote of the day"/>
+      <Anecdotes text={anecdotes[selected]} />
+      <Votes votes={votes[selected]} />
+      <Button onClick={voteAnecdotes} text="vote" />
+      <Button onClick={randomAnecdotes} text="next anecdote"/>
+
+      <Header text="Anecdote with most votes"/>
+      <WithMostVotes anecdotes={anecdotes} votesArray={votes} />
     </div>
   )
 }
