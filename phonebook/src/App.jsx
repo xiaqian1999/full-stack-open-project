@@ -9,15 +9,24 @@ const App = () => {
     }
   ]) 
   const [newName, setNewName] = useState('')
-  console.log(persons)
 
   const addName = (event) => {
     event.preventDefault()
+
+    //Test whether at least one element in the array passes the test implemented by the provided function
+    //if it returns true in the array, it finds an element for which the provided function returns true
+    //otherwise it returns false, it doesn't modifired the array
+    const nameExists = persons.some((person) => person.name === newName)
+    if(nameExists){
+      alert(`${newName} is already added to phonebook`)
+      setNewName('')
+      return;
+    }
+
     const nameObject = {
       id: persons.length + 1,
       name: newName,
     }
-
     setPersons(persons.concat(nameObject))
     setNewName('')
   }
