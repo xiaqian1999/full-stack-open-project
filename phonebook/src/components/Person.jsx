@@ -1,6 +1,12 @@
-const Person = ({ person }) => {
+const Person = ({ filteredPerson }) => {
     return(
-        <li>{person.name} {person.number}</li>
+        <div>
+            <ul>
+                {filteredPerson.map(person => 
+                    <li key={person.id}>{person.name} {person.number}</li>
+                )}
+            </ul>
+        </div>
     )
 }
 
