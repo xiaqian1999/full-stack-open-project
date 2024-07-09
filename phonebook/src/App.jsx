@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import Person from './components/Person'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
@@ -13,11 +12,12 @@ const App = () => {
   const [filteredPerson, setFilteredPerson] = useState([]);
 
 useEffect(() => {
-  personService.getAll()
-  .then(initialPersons => {
-      setPersons(initialPersons)
-      setFilteredPerson(initialPersons)
-  })
+  personService
+    .getAll()
+    .then(initialPersons => {
+        setPersons(initialPersons)
+        setFilteredPerson(initialPersons)
+    })
 }, [])
 
   const addName = (event) => {
@@ -34,17 +34,18 @@ useEffect(() => {
     }
 
     const userObject = {
-      id: persons.length + 1,
+      // id: persons.length + 1,
       name: newName,
       number: newNumber
     };
 
-    personService.create(userObject)
+    personService
+      .create(userObject)
       .then(returnedPersons => {
         setPersons(persons.concat(returnedPersons));
+        setFilteredPerson(filteredPerson.concat(returnedPersons));
         setNewName('');
         setNewNumber('');
-        setFilteredPerson(filteredPerson.concat(returnedPersons));
       })
   }
 
@@ -61,11 +62,27 @@ useEffect(() => {
     const filterItems = persons.filter(person => person.name.toLowerCase().includes(event.target.value));
     setFilteredPerson(filterItems);
   }
+  
+  const deleteName = (id) => {
+    const personName = persons.filter((person) => person.id === id)
+    if(window.confirm(`Do you want to delete ${personName[0].name}`)){
+      personService
+      .remove(id)
+      .then(() => {
+        setPersons(persons.filter(person => person.id !== id));
+        setFilteredPerson(filteredPerson.filter(person => person.id !== id));
+      }).catch(error => {
+        console.log(error.message);
+      })
+    }
+  }
 
   return (
     <div>
       <h2>Phonebook</h2>
       <Filter newSearch={newSearch} handleSearchPerson={handleSearchPerson}/>
+
+      <h2>Add New Person</h2>
       <PersonForm 
         addName={addName}
         newName={newName}
@@ -74,7 +91,7 @@ useEffect(() => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Person filteredPerson={filteredPerson} />
+      <Person filteredPerson={filteredPerson} deleteName={deleteName}/>
     </div>
   )
 }
