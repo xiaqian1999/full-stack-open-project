@@ -22,31 +22,46 @@ useEffect(() => {
 
   const addName = (event) => {
     event.preventDefault()
+    const nameExists = persons.filter((person) => person.name.toLowerCase() === newName.toLowerCase())
+    const personToAdd = nameExists[0]
+    const updatedPerson = { ...personToAdd, number: newNumber}
 
-    //Some() => Test whether at least one element in the array passes the test implemented by the provided function
-    //if it returns true in the array, it finds an element for which the provided function returns true
-    //otherwise it returns false, it doesn't modifired the array
-    const nameExists = persons.some((person) => person.name === newName)
+    //logic is that if name exists, run the update, else run the below
     if(nameExists){
-      alert(`${newName} is already added to phonebook`)
-      setNewName('')
-      return;
+      if(window.confirm(`${personToAdd.name} is already added to phonebook, do you want to replace the old number with the new one?`)){
+        personService
+          .update(updatedPerson.id, updatedPerson)
+          .then(returnedPerson => {
+            setPersons(persons.map(
+              prevPerson => prevPerson.id !== personToAdd.id ? prevPerson : returnedPerson
+            ));
+            setFilteredPerson(filteredPerson.map(
+              prevFilteredPerson => prevFilteredPerson.id !== personToAdd.id ? prevFilteredPerson : returnedPerson
+            ));
+            setNewName('');
+            setNewNumber('');
+        }).catch(error => {
+          console.log(error.message);
+        });
+      }else{
+        return;
+      }
+    }else{
+      const userObject = {
+        // id: persons.length + 1,
+        name: newName,
+        number: newNumber
+      };
+
+      personService
+        .create(userObject)
+        .then(returnedPersons => {
+          setPersons(persons.concat(returnedPersons));
+          setFilteredPerson(filteredPerson.concat(returnedPersons));
+          setNewName('');
+          setNewNumber('');
+        })
     }
-
-    const userObject = {
-      // id: persons.length + 1,
-      name: newName,
-      number: newNumber
-    };
-
-    personService
-      .create(userObject)
-      .then(returnedPersons => {
-        setPersons(persons.concat(returnedPersons));
-        setFilteredPerson(filteredPerson.concat(returnedPersons));
-        setNewName('');
-        setNewNumber('');
-      })
   }
 
   const handleNameChange = (event) => {
