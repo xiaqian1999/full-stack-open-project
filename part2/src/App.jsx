@@ -30,7 +30,7 @@ const Notification = ({ message }) => {
 }
 
 const App = () => {
-  const [notes, setNotes] = useState([])
+  const [notes, setNotes] = useState(null)
   const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState('some error happened...')
@@ -42,6 +42,10 @@ const App = () => {
         setNotes(initialNotes)
       })
   }, [])
+
+  if(!notes){
+    return null
+  }
 
   const addNotes = (event) => {
     event.preventDefault()
