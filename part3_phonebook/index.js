@@ -24,6 +24,15 @@ let persons = [
     }
 ]
 
+app.use(express.json())
+
+const generateId = () => {
+  const maxId = persons.length > 0
+    ? Math.max(...persons.map(p => p.id))
+    : 0
+  return maxId + 1
+}
+
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>');
 });
@@ -32,16 +41,20 @@ app.get('/api/persons', (request, response) => {
     response.json(persons);
 });
 
+app.get('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  const person = persons.find(person => person.id === id)
+
+  if(person){
+    response.json(person)
+  }else{
+    response.status(404).end()
+  }
+})
+
 app.get('/info', (request, response) => {
     response.send(`Phonebook has info for ${persons.length} people. <br> ${Date()}`);
 });
-
-const generateId = () => {
-  const maxId = persons.length > 0
-    ? Math.max(...persons.map(p => p.id))
-    : 0
-  return maxId + 1
-}
 
 app.post('/api/persons', (request, response) => {
   const name = request.name
@@ -59,6 +72,13 @@ app.post('/api/persons', (request, response) => {
 
   persons = persons.concat(person)
   response.json(person)
+});
+
+app.delete('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  persons = persons.filter(person => person.id !== id)
+
+  response.status(204).end()
 })
 
 const PORT = 3001
